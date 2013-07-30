@@ -1,0 +1,185 @@
+<?php
+
+/**
+ * @file.
+ *
+ * Module file for the instagram_block module.
+ */
+
+/**
+ * Implements hook_block_info().
+ *
+ * Defines the new instagram block.
+ */
+function instagram_block_block_info() {
+  $blocks['instagram_block'] = array(
+    'info' => t('Instagram Block'),
+    'cache' => DRUPAL_CACHE_PER_USER,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_configure().
+ *
+ * Set values to be used when rendering the block later.
+ */
+function instagram_block_block_configure($delta = '') {
+  $form = array();
+
+  if ($delta == 'instagram_block') {
+    // Create an array of empty keys to be used in storage variable has not been set.
+    $empty = array(
+      'user_id' => '',
+      'access_token' => '',
+      'count' => '',
+      'width' => '',
+      'height' => '',
+    );
+
+    // Store data from variable in $form for now.
+    $form['#data'] = variable_get('instagram_block_data', $empty);
+
+    $form['user_id'] = array(
+      '#type' => 'textfield',
+      '#title' => t('User Id'),
+      '#description' => t('Your unique Instagram user id. Eg. 460786510'),
+      '#default_value' => isset($form['#data']['user_id']) ? $form['#data']['user_id'] : '',
+    );
+
+    $form['access_token'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Access Token'),
+      '#description' => t('Your Instagram access token. Eg. 460786509.ab103e5.a54b6834494643588d4217ee986384a8'),
+      '#default_value' => isset($form['#data']['access_token']) ? $form['#data']['access_token'] : '',
+    );
+
+    $form['count'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Number of images to display.'),
+      '#default_value' => isset($form['#data']['count']) ? $form['#data']['count'] : '',
+    );
+
+    $form['width'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Image width in pixels.'),
+      '#default_value' => isset($form['#data']['width']) ? $form['#data']['width'] : '',
+    );
+
+    $form['height'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Image height in pixels.'),
+      '#default_value' => isset($form['#data']['height']) ? $form['#data']['height'] : '',
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ *
+ * Save the information from the configuration form to a drupal variable.
+ */
+function instagram_block_block_save($delta = '', $edit = array()) {
+  if ($delta == 'instagram_block') {
+    variable_set('instagram_block_data', $edit);
+  }
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * Fetches the instagram photos and creates a render array.
+ */
+function instagram_block_block_view($delta = '') {
+  $block = array();
+
+  if ($delta == 'instagram_block') {
+    $values = variable_get('instagram_block_data', array());
+    $content = array();
+    $url = "https://api.instagram.com/v1/users/" . $values['user_id'] . "/media/recent/?access_token=" . $values['access_token'] . "&count=" . $values['count'];
+    $result = fetchData($url);
+    $result = json_decode($result);
+    foreach ($result->data as $post) {
+      $content['children'][$post->id] = array(
+        '#markup' => '',
+        '#theme' => 'instagram_block_image',
+        'post' => $post,
+        'link' => $post->link,
+        'url' => $post->images->thumbnail->url,
+        'width' => $values['width'],
+        'height' => $values['height'],
+      );
+    }
+    $block['subject'] = 'Instagram Block';
+    $block['content'] = $content; 
+  }
+
+  return $block;
+}
+
+/**
+ * Fetches instagram post information.
+ */
+function fetchData($url) {
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return $result;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function instagram_block_menu() {
+  $items['admin/config/content/instagram_block'] = array(
+    'title' => 'Instagram Block',
+    'description' => 'Configuration page for Instagram Block.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('instagram_block_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'instagram_block.admin.inc',
+  );
+
+  $items['admin/configure/instagram'] = array(
+    'title' => 'Your Instagram details',
+    'description' => 'Generate authorisation details for Instagram.',
+    'page callback' => 'instagram_block_authorise_page',
+    //'page arguments' => array(''),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'instagram_block.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Theme implementation to output the instagram images.
+ */
+function theme_instagram_block_image($variables) {
+  $element = $variables['element'];
+  $output = '
+    <a class="group" target="blank_" rel="group1" href="' . $element['link'] . '">
+      <img style="float: left; margin: 0 5px 5px 0px; width: ' . $element['width'] . 'px; height: ' . $element['height'] . 'px;" src="' . $element['url'] . '">
+    </a>';
+
+  return $output;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function instagram_block_theme() {
+  $items = array(
+    'instagram_block_image' => array(
+      'render element' => 'element',
+    ),
+  );
+
+  return $items;
+}

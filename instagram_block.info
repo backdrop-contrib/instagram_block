@@ -1,0 +1,5 @@
+name = Instagram Block
+description = Creates a block that displays images from instagram.
+core = 7.x
+
+dependencies[] = block
