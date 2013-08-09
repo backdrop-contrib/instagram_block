@@ -17,51 +17,72 @@ function instagram_block_admin_settings($form, &$form_state) {
   $options = array(
     'query' => array(
       'client_id' => '759ec610e0c1416baa8a8a6b41552087',
-      'redirect_uri' => 'http://yanniboi.com/admin/configure/instagram',
+      'redirect_uri' => 'http://instagram.yanniboi.com/configure/instagram',
       'response_type' => 'code',
     ),
+    'attributes' => array(
+      'target' => '_blank',
+    ),
   );
+
   $content .= l('here', $path, $options);
+  $content .= '.';
 
   $form['authorise'] = array(
     '#markup' => $content,
   );
 
-  $form['test'] = array('#markup' => 'Test');
+  // Create an array of empty keys to be used in storage variable has not been set.
+  $empty = array(
+    'user_id' => '',
+    'access_token' => '',
+    'count' => '',
+    'width' => '',
+    'height' => '',
+  );
+
+  // Store data from variable in $form for now.
+  $form['#data'] = variable_get('instagram_block_data', $empty);
+
+  $form['user_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('User Id'),
+    '#description' => t('Your unique Instagram user id. Eg. 460786510'),
+    '#default_value' => isset($form['#data']['user_id']) ? $form['#data']['user_id'] : '',
+  );
+
+  $form['access_token'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Access Token'),
+    '#description' => t('Your Instagram access token. Eg. 460786509.ab103e5.a54b6834494643588d4217ee986384a8'),
+    '#default_value' => isset($form['#data']['access_token']) ? $form['#data']['access_token'] : '',
+  );
+
+  $form['#validate'][] = 'instagram_block_admin_settings_validate';
+  $form['#submit'][] = 'instagram_block_admin_settings_submit';
+
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
 
   return $form;
 }
 
+
 /**
- * Redirect page from the authentication process.
+ * Form validation handler.
  */
-function instagram_block_authorise_page() {
-  $url = "https://api.instagram.com/oauth/access_token";
-  $access_token_parameters = array(
-    'client_id'	=> '759ec610e0c1416baa8a8a6b41552087',
-    'client_secret' => 'fe74f2686c3d42deae29e59aafda2e74',
-    'grant_type' => 'authorization_code',
-    'redirect_uri' => 'http://yanniboi.com/admin/configure/instagram',
-    'code' => $_GET["code"],
-  );
+function instagram_block_admin_settings_validate(&$form, &$form_state) {
+  // @todo: Do some validation.
+}
 
-  $curl = curl_init($url);
-  curl_setopt($curl,CURLOPT_POST,true);
-  curl_setopt($curl,CURLOPT_POSTFIELDS,$access_token_parameters);
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-  $result = curl_exec($curl);
-
-  $user_id = '1234';
-  $access_code = '1234';
-
-  $content = array(
-    'user_id' => array(
-      '#markup' => 'Your user id is: ' . $user_id . '</br>',
-    ),
-    'access_code' => array(
-      '#markup' => 'Your access code is: ' . $access_code,
-    ),
-  );
-
-  return $content;
+/**
+ * Form submission handler.
+ */
+function instagram_block_admin_settings_submit(&$form, &$form_state) {
+  if (isset($form_state['values'])) {
+    variable_set('instagram_block_data', $form_state['values']);
+  }
 }
