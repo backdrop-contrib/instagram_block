@@ -32,9 +32,9 @@ function instagram_block_block_configure($delta = '') {
     $empty = array(
       'user_id' => '',
       'access_token' => '',
-      'count' => '',
-      'width' => '',
-      'height' => '',
+      'count' => '4',
+      'width' => '100',
+      'height' => '100',
     );
 
     // Store data from variable in $form for now.
@@ -96,6 +96,7 @@ function instagram_block_block_view($delta = '') {
   $block = array();
 
   if ($delta == 'instagram_block') {
+    drupal_add_css(drupal_get_path('module', 'instagram_block') . '/css/instagram-block.css');
     $values = variable_get('instagram_block_data', array());
     $content = array();
     $url = "https://api.instagram.com/v1/users/" . $values['user_id'] . "/media/recent/?access_token=" . $values['access_token'] . "&count=" . $values['count'];

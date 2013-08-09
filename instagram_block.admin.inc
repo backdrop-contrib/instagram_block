@@ -35,9 +35,9 @@ function instagram_block_admin_settings($form, &$form_state) {
   $empty = array(
     'user_id' => '',
     'access_token' => '',
-    'count' => '',
-    'width' => '',
-    'height' => '',
+    'count' => '4',
+    'width' => '100',
+    'height' => '100',
   );
 
   // Store data from variable in $form for now.
@@ -55,6 +55,24 @@ function instagram_block_admin_settings($form, &$form_state) {
     '#title' => t('Access Token'),
     '#description' => t('Your Instagram access token. Eg. 460786509.ab103e5.a54b6834494643588d4217ee986384a8'),
     '#default_value' => isset($form['#data']['access_token']) ? $form['#data']['access_token'] : '',
+  );
+
+  $form['count'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Number of images to display.'),
+    '#default_value' => isset($form['#data']['count']) ? $form['#data']['count'] : '',
+  );
+
+  $form['width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image width in pixels.'),
+     '#default_value' => isset($form['#data']['width']) ? $form['#data']['width'] : '',
+  );
+
+  $form['height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image height in pixels.'),
+    '#default_value' => isset($form['#data']['height']) ? $form['#data']['height'] : '',
   );
 
   $form['#validate'][] = 'instagram_block_admin_settings_validate';
@@ -82,5 +100,6 @@ function instagram_block_admin_settings_validate(&$form, &$form_state) {
 function instagram_block_admin_settings_submit(&$form, &$form_state) {
   if (isset($form_state['values'])) {
     variable_set('instagram_block_data', $form_state['values']);
+    drupal_set_message(t('Instagram block configuration has been saved.'), 'status');
   }
 }
