@@ -1,8 +1,7 @@
 <?php
 
 /**
- * @file.
- *
+ * @file
  * Contains forms and pages for instagram admin pages.
  */
 
@@ -12,7 +11,7 @@
 function instagram_block_admin_settings($form, &$form_state) {
   $form = array();
 
-  $content = 'To configure your instagram account you need to authorise your account. To do this, click ';
+  $content = t('To configure your instagram account you need to authorise your account. To do this, click ');
   $path = 'https://instagram.com/oauth/authorize/';
   $options = array(
     'query' => array(
@@ -25,14 +24,14 @@ function instagram_block_admin_settings($form, &$form_state) {
     ),
   );
 
-  $content .= l('here', $path, $options);
+  $content .= l(t('here'), $path, $options);
   $content .= '.';
 
   $form['authorise'] = array(
     '#markup' => $content,
   );
 
-  // Create an array of empty keys to be used in storage variable has not been set.
+  // Create a keyed array of blank defaults for the storage variable.
   $empty = array(
     'user_id' => '',
     'access_token' => '',
@@ -60,7 +59,6 @@ function instagram_block_admin_settings($form, &$form_state) {
 
   $form['#validate'][] = 'instagram_block_admin_settings_validate';
   $form['#submit'][] = 'instagram_block_admin_settings_submit';
-
 
   $form['submit'] = array(
     '#type' => 'submit',

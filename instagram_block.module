@@ -1,8 +1,7 @@
 <?php
 
 /**
- * @file.
- *
+ * @file
  * Module file for the instagram_block module.
  */
 
@@ -29,7 +28,7 @@ function instagram_block_block_configure($delta = '') {
   $form = array();
 
   if ($delta == 'instagram_block') {
-    // Create an array of empty keys to be used in storage variable has not been set.
+    // Create a keyed array of blank defaults for the storage variable.
     $empty = array(
       'user_id' => '',
       'access_token' => '',
@@ -100,7 +99,7 @@ function instagram_block_block_view($delta = '') {
     $values = variable_get('instagram_block_data', array());
     $content = array();
     $url = "https://api.instagram.com/v1/users/" . $values['user_id'] . "/media/recent/?access_token=" . $values['access_token'] . "&count=" . $values['count'];
-    $result = fetchData($url);
+    $result = instagram_block_fetch_data($url);
     $result = json_decode($result);
     foreach ($result->data as $post) {
       $content['children'][$post->id] = array(
@@ -114,7 +113,7 @@ function instagram_block_block_view($delta = '') {
       );
     }
     $block['subject'] = 'Instagram Block';
-    $block['content'] = $content; 
+    $block['content'] = $content;
   }
 
   return $block;
@@ -123,7 +122,7 @@ function instagram_block_block_view($delta = '') {
 /**
  * Fetches instagram post information.
  */
-function fetchData($url) {
+function instagram_block_fetch_data($url) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
