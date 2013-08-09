@@ -66,7 +66,7 @@ function instagram_block_admin_settings($form, &$form_state) {
   $form['width'] = array(
     '#type' => 'textfield',
     '#title' => t('Image width in pixels.'),
-     '#default_value' => isset($form['#data']['width']) ? $form['#data']['width'] : '',
+    '#default_value' => isset($form['#data']['width']) ? $form['#data']['width'] : '',
   );
 
   $form['height'] = array(
