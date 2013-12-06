@@ -4,7 +4,7 @@
  * Default theme implementation of an Instagram image link.
  *
  * Available variables:
- * - data: The entire data array returned from the Instagram API request.
+ * - post: The entire data array returned from the Instagram API request.
  * - href: The url to the Instagram post page.
  * - src: The source url to the instagram image.
  * - width: The display width of the image.

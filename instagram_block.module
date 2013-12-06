@@ -183,7 +183,7 @@ function instagram_block_menu() {
 function instagram_block_theme() {
   return array(
     'instagram_block_image' => array(
-      'variables' => array('height' => NULL,'width' => NULL, 'src' => NULL, 'href' => NULL),
+      'variables' => array('height' => NULL,'width' => NULL, 'src' => NULL, 'href' => NULL, 'post' => NULL),
       'template' => 'instagram-block-image',
     ),
   );
