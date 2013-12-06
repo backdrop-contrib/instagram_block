@@ -96,23 +96,35 @@ function instagram_block_block_view($delta = '') {
   $block = array();
 
   if ($delta == 'instagram_block') {
+    // Add instagram_block specific styles.
     drupal_add_css(drupal_get_path('module', 'instagram_block') . '/css/instagram-block.css');
+
+    // Get configuration values.
     $values = variable_get('instagram_block_data', array());
     $content = array();
-    $url = "https://api.instagram.com/v1/users/" . $values['user_id'] . "/media/recent/?access_token=" . $values['access_token'] . "&count=" . $values['count'];
-    $result = instagram_block_fetch_data($url);
-    $result = json_decode($result);
-    foreach ($result->data as $post) {
-      $content['children'][$post->id] = array(
-        '#markup' => '',
-        '#theme' => 'instagram_block_image',
-        'post' => $post,
-        'link' => $post->link,
-        'url' => $post->images->thumbnail->url,
-        'width' => $values['width'],
-        'height' => $values['height'],
-      );
+
+    // Check that block configuration is available.
+    if (!isset($values['user_id']) || !isset($values['access_token'])) {
+      // Remind user to fill in configuration.
+      $content = instagram_block_get_configuration_reminder();
     }
+    else {
+      $url = "https://api.instagram.com/v1/users/" . $values['user_id'] . "/media/recent/?access_token=" . $values['access_token'] . "&count=" . $values['count'];
+      $result = instagram_block_fetch_data($url);
+      $result = json_decode($result);
+      foreach ($result->data as $post) {
+        $content['children'][$post->id] = array(
+          '#markup' => '',
+          '#theme' => 'instagram_block_image',
+          '#post' => $post,
+          '#href' => $post->link,
+          '#src' => $post->images->thumbnail->url,
+          '#width' => $values['width'],
+          '#height' => $values['height'],
+        );
+      }
+    }
+
     $block['subject'] = 'Instagram Block';
     $block['content'] = $content;
   }
@@ -150,27 +162,22 @@ function instagram_block_menu() {
 }
 
 /**
- * Theme implementation to output the instagram images.
- */
-function theme_instagram_block_image($variables) {
-  $element = $variables['element'];
-  $output = '
-    <a class="group" target="blank_" rel="group1" href="' . $element['link'] . '">
-      <img style="float: left; margin: 0 5px 5px 0px; width: ' . $element['width'] . 'px; height: ' . $element['height'] . 'px;" src="' . $element['url'] . '">
-    </a>';
-
-  return $output;
-}
-
-/**
  * Implements hook_theme().
  */
 function instagram_block_theme() {
-  $items = array(
+  return array(
     'instagram_block_image' => array(
-      'render element' => 'element',
+      'variables' => array('height' => NULL,'width' => NULL, 'src' => NULL, 'href' => NULL),
+      'template' => 'instagram-block-image',
     ),
   );
+}
 
-  return $items;
+/**
+ * Builds render array to remind user to configure block settings.
+ */
+function instagram_block_get_configuration_reminder() {
+  return array(
+    '#markup' => t('Please don\'t forget to configure this block.')
+  );
 }
