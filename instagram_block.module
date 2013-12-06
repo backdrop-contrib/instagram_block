@@ -13,7 +13,7 @@
 function instagram_block_block_info() {
   $blocks['instagram_block'] = array(
     'info' => t('Instagram Block'),
-    'cache' => DRUPAL_CACHE_PER_USER,
+    'cache' => DRUPAL_CACHE_GLOBAL,
   );
 
   return $blocks;
