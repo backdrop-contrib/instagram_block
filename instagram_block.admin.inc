@@ -38,6 +38,7 @@ function instagram_block_admin_settings($form, &$form_state) {
     'count' => '4',
     'width' => '100',
     'height' => '100',
+    'img_resolution' => 'thumbnail',
   );
 
   // Store data from variable in $form for now.
@@ -73,6 +74,20 @@ function instagram_block_admin_settings($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Image height in pixels.'),
     '#default_value' => isset($form['#data']['height']) ? $form['#data']['height'] : '',
+  );
+
+  $image_options = array(
+    'thumbnail' => t('Thumbnail Preview'),
+    'low_resolution' => t('Low Resolution'),
+    'standard_resolution' => t('Standard Resolution'),
+  );
+
+  $form['img_resolution'] = array(
+    '#type' => 'select',
+    '#title' => t('Image resolution'),
+    '#description' => t('Choose the quality of the images you would like to display.'),
+    '#options' => $image_options,
+    '#default_value' => isset($form['#data']['img_resolution']) ? $form['#data']['img_resolution'] : '',
   );
 
   $form['#validate'][] = 'instagram_block_admin_settings_validate';
