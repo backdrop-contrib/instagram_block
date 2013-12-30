@@ -125,11 +125,12 @@ function instagram_block_block_view($delta = '') {
       $content = instagram_block_get_configuration_reminder();
     }
     else {
-      $url = "https://api.instagram.com/v1/users/" . $values['user_id'] . "/media/recent/?access_token=" . $values['access_token'] . "&count=" . $values['count'];
-      $result = instagram_block_fetch_data($url);
-      $result = json_decode($result);
-      foreach ($result->data as $post) {
-        $content['children'][$post->id] = array(
+      // Build and send request to the Instagram API.
+      $request = new InstagramRequest($values['user_id'], $values['access_token'], $values['count']);
+      $response = $request->get_instagram_posts();
+
+      foreach ($response as $post) {
+        $content['children'][] = array(
           '#markup' => '',
           '#theme' => 'instagram_block_image',
           '#post' => $post,
@@ -146,19 +147,6 @@ function instagram_block_block_view($delta = '') {
   }
 
   return $block;
-}
-
-/**
- * Fetches instagram post information.
- */
-function instagram_block_fetch_data($url) {
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 20);
-  $result = curl_exec($ch);
-  curl_close($ch);
-  return $result;
 }
 
 /**
