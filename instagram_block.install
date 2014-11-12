@@ -11,14 +11,23 @@
  * Creates config variables.
  */
 function instagram_block_install() {
-  $block = array(
+  $user_block = array(
     'count' => '4',
     'width' => '100',
     'height' => '100',
     'img_resolution' => 'thumbnail',
   );
 
-  variable_set('instagram_block_user_block_settings', $block);
+  $tag_block = array(
+    'tag' => 'drupal',
+    'count' => '4',
+    'width' => '100',
+    'height' => '100',
+    'img_resolution' => 'thumbnail',
+  );
+
+  variable_set('instagram_block_user_block_settings', $user_block);
+  variable_set('instagram_block_tag_block_settings', $tag_block);
 }
 
 /*
@@ -29,6 +38,7 @@ function instagram_block_install() {
 function instagram_block_uninstall() {
   variable_del('instagram_block_admin_settings');
   variable_del('instagram_block_user_block_settings');
+  variable_del('instagram_block_tag_block_settings');
 }
 
 /**

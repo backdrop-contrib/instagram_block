@@ -12,13 +12,48 @@ class InstagramRequest {
   protected $response;
 
   /**
-   * Builds a request.
+   * @var array $config
    */
-  public function __construct($user_id, $access_token, $count) {
-    $url = 'https://api.instagram.com/v1/users/' . $user_id . '/media/recent/';
+  protected $config;
+
+
+  /**
+   * @var array $values
+   */
+  protected $values;
+
+  /**
+   * Constructs the request object.
+   *
+   * @param array $config
+   * @param array $values
+   */
+  public function __construct(array $config, array $values) {
+    $this->config = $config;
+    $this->values = $values;
+  }
+
+  /**
+   * Builds a request for {user} media.
+   */
+  public function requestUserMedia() {
+    $url = 'https://api.instagram.com/v1/users/' . $this->config['user_id'] . '/media/recent/';
     $params = array(
-      'access_token' => $access_token,
-      'count' => $count,
+      'access_token' => $this->config['access_token'],
+      'count' => $this->values['count'],
+    );
+
+    $this->response = $this->request($url, $params, 'GET');
+  }
+
+  /**
+   * Builds a request for {tag} media
+   */
+  public function requestTagMedia() {
+    $url = "https://api.instagram.com/v1/tags/" . $this->values['tag'] . "/media/recent/";
+    $params = array(
+      'access_token' => $this->config['access_token'],
+      'count' => $this->values['count'],
     );
 
     $this->response = $this->request($url, $params, 'GET');
@@ -26,6 +61,12 @@ class InstagramRequest {
 
   /**
    * Performs a request.
+   *
+   * @param string $url
+   * @param array $params
+   * @param string $method
+   *
+   * @throws \Exception
    */
   protected function request($url, $params = array(), $method = 'GET') {
     $data = '';
@@ -49,9 +90,11 @@ class InstagramRequest {
     }
     else {
       $error = $response->error;
-      $data = $this->parse_response($response->data);
-      if (isset($data->error)) {
-        $error = $data->error;
+      if (!empty($response->data)) {
+        $data = $this->parse_response($response->data);
+        if (isset($data->error)) {
+          $error = $data->error;
+        }
       }
       throw new Exception($error);
     }
@@ -70,6 +113,7 @@ class InstagramRequest {
    *   The HTTP method to use (normally POST or GET).
    * @param array $data
    *   An array of parameters
+   *
    * @return
    *   stdClass response object.
    */
