@@ -28,32 +28,8 @@ function instagram_block_block_configure($delta = '') {
   $form = array();
 
   if ($delta == 'instagram_block') {
-    // Create a keyed array of blank defaults for the storage variable.
-    $empty = array(
-      'user_id' => '',
-      'access_token' => '',
-      'count' => '4',
-      'width' => '100',
-      'height' => '100',
-      'img_resolution' => 'thumbnail',
-    );
-
     // Store data from variable in $form for now.
-    $form['#data'] = variable_get('instagram_block_data', $empty);
-
-    $form['user_id'] = array(
-      '#type' => 'textfield',
-      '#title' => t('User Id'),
-      '#description' => t('Your unique Instagram user id. Eg. 460786510'),
-      '#default_value' => isset($form['#data']['user_id']) ? $form['#data']['user_id'] : '',
-    );
-
-    $form['access_token'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Access Token'),
-      '#description' => t('Your Instagram access token. Eg. 460786509.ab103e5.a54b6834494643588d4217ee986384a8'),
-      '#default_value' => isset($form['#data']['access_token']) ? $form['#data']['access_token'] : '',
-    );
+    $form['#data'] = variable_get('instagram_block_user_block_settings', array());
 
     $form['count'] = array(
       '#type' => 'textfield',
@@ -98,7 +74,7 @@ function instagram_block_block_configure($delta = '') {
  */
 function instagram_block_block_save($delta = '', $edit = array()) {
   if ($delta == 'instagram_block') {
-    variable_set('instagram_block_data', $edit);
+    variable_set('instagram_block_user_block_settings', $edit);
   }
 }
 
@@ -115,18 +91,19 @@ function instagram_block_block_view($delta = '') {
     drupal_add_css(drupal_get_path('module', 'instagram_block') . '/css/instagram-block.css');
 
     // Get configuration values.
-    $values = variable_get('instagram_block_data', array());
+    $config = variable_get('instagram_block_admin_settings', array());
+    $values = variable_get('instagram_block_user_block_settings', array());
     $img_resolution = isset($values['img_resolution']) ? $values['img_resolution'] : 'thumbnail';
     $content = array();
 
     // Check that block configuration is available.
-    if (!isset($values['user_id']) || !isset($values['access_token'])) {
+    if (!isset($config['user_id']) || !isset($config['access_token'])) {
       // Remind user to fill in configuration.
       $content = instagram_block_get_configuration_reminder();
     }
     else {
       // Build and send request to the Instagram API.
-      $request = new InstagramRequest($values['user_id'], $values['access_token'], $values['count']);
+      $request = new InstagramRequest($config['user_id'], $config['access_token'], $values['count']);
       $response = $request->get_instagram_posts();
 
       foreach ($response as $post) {
@@ -153,7 +130,7 @@ function instagram_block_block_view($delta = '') {
  * Implements hook_menu().
  */
 function instagram_block_menu() {
-  $items['admin/config/content/instagram_block'] = array(
+  $items['admin/config/services/instagram_block'] = array(
     'title' => 'Instagram Block',
     'description' => 'Configuration page for Instagram Block.',
     'page callback' => 'drupal_get_form',
@@ -182,6 +159,6 @@ function instagram_block_theme() {
  */
 function instagram_block_get_configuration_reminder() {
   return array(
-    '#markup' => t('Please don\'t forget to configure this block.')
+    '#markup' => t('Please don\'t forget to !configure this block.', array('!configure' => l(t('configure'),'admin/config/services/instagram_block')))
   );
 }
