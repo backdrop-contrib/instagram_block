@@ -78,6 +78,10 @@ function instagram_block_admin_settings_validate(&$form, &$form_state) {
  */
 function instagram_block_admin_settings_submit(&$form, &$form_state) {
   if (isset($form_state['values'])) {
+    // Strip any spaces that may have resulted from a copy/paste of tokens
+    $form_state['values']['access_token'] = trim($form_state['values']['access_token']);
+    $form_state['values']['user_id'] = trim($form_state['values']['user_id']);
+
     variable_set('instagram_block_admin_settings', $form_state['values']);
     drupal_set_message(t('Instagram block admin configuration has been saved.'), 'status');
   }
