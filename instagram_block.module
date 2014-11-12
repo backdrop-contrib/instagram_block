@@ -186,12 +186,15 @@ function instagram_block_block_view($delta = '') {
     }
     $response = $request->get_instagram_posts();
     foreach ($response as $post) {
+      $url = $post->images->{$img_resolution}->url;
+      $components = parse_url($url);
+
       $content['children'][] = array(
         '#markup' => '',
         '#theme' => 'instagram_block_image',
         '#post' => $post,
         '#href' => $post->link,
-        '#src' => $post->images->{$img_resolution}->url,
+        '#src' => str_replace($components['scheme'] . '://', '//', $url),
         '#width' => $values['width'],
         '#height' => $values['height'],
       );

@@ -12,5 +12,5 @@
  */
 ?>
 <a class="group" target="blank_" rel="group1" href="<?php print $href ?>">
-  <img style="float: left; margin: 0 5px 5px 0px; width: <?php print $width ?>px; height: <?php print $height ?>px;" src=" <?php print $src ?>">
+  <img style="float: left; margin: 0 5px 5px 0px; width: <?php print $width ?>px; height: <?php print $height ?>px;" src="<?php print $src ?>">
 </a>
