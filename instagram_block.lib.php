@@ -95,8 +95,11 @@ class InstagramRequest {
         if (isset($data->error)) {
           $error = $data->error;
         }
+        elseif (isset($data->meta)) {
+          $error = new Exception($data->meta->error_type . ': ' . $data->meta->error_message, $data->meta->code);
+        }
       }
-      throw new Exception($error);
+      watchdog_exception('instagram_block', $error);
     }
   }
 
