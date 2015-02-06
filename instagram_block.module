@@ -6,6 +6,17 @@
  */
 
 /**
+* Implements hook_config_info().
+*/
+function instagram_block_config_info() {
+  $prefixes['instagram_block.settings'] = array(
+    'label' => t('Instagram Block Settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+ 
+/**
  * Implements hook_block_info().
  *
  * Defines the new instagram block.
@@ -13,12 +24,12 @@
 function instagram_block_block_info() {
   $blocks['instagram_block'] = array(
     'info' => t('Instagram Block - User Block'),
-    'cache' => DRUPAL_CACHE_GLOBAL,
+    'cache' => BACKDROP_CACHE_GLOBAL,
   );
 
   $blocks['instagram_block_tag'] = array(
     'info' => t('Instagram Block - Tag Block'),
-    'cache' => DRUPAL_CACHE_GLOBAL,
+    'cache' => BACKDROP_CACHE_GLOBAL,
   );
 
   return $blocks;
@@ -40,7 +51,7 @@ function instagram_block_block_configure($delta = '') {
   );
 
   // Store data from variable in $form for now.
-  $form['#admin_data'] = variable_get('instagram_block_admin_settings', $empty);
+  $form['#admin_data'] = config_get('instagram_block.settings', 'instagram_block_admin_settings');
 
   $form['description'] = array(
     '#title' => t('Description'),
@@ -80,7 +91,7 @@ function instagram_block_block_configure($delta = '') {
   switch ($delta) {
     case 'instagram_block':
       // Store data from variable in $form for now.
-      $form['#block_data'] = variable_get('instagram_block_user_block_settings', array());
+      $form['#block_data'] = config_get('instagram_block.settings', 'instagram_block_user_block_settings');
       $description = t('Configurations in this block utilise the !globalconfig.', array(
         '!globalconfig' => l('global configuration', 'admin/config/services/instagram_block'),
       ));
@@ -92,7 +103,7 @@ function instagram_block_block_configure($delta = '') {
 
       break;
     case 'instagram_block_tag':
-      $form['#block_data'] = variable_get('instagram_block_tag_block_settings', array());
+      $form['#block_data'] = config_get('instagram_block.settings', 'instagram_block_tag_block_settings');
       $description = t('This block won\'t fetch media from your personal instagram account. Configurations in this block utilise the !globalconfig.', array(
         '!globalconfig' => l('global configuration', 'admin/config/services/instagram_block'),
       ));
@@ -120,19 +131,19 @@ function instagram_block_block_configure($delta = '') {
 /**
  * Implements hook_block_save().
  *
- * Save the information from the configuration form to a drupal variable.
+ * Save the information from the configuration form to a Backdrop variable.
  */
 function instagram_block_block_save($delta = '', $edit = array()) {
   switch ($delta) {
     case 'instagram_block':
-      $variables = variable_get('instagram_block_user_block_settings', array());
+      $variables = config_get('instagram_block.settings', 'instagram_block_user_block_settings');
       $save_values = array_merge($variables, $edit);
-      variable_set('instagram_block_user_block_settings', $save_values);
+      config_set('instagram_block.settings', 'instagram_block_user_block_settings', $save_values);
       break;
     case 'instagram_block_tag':
-      $variables = variable_get('instagram_block_tag_block_settings', array());
+      $variables = config_get('instagram_block.settings', 'instagram_block_tag_block_settings');
       $save_values = array_merge($variables, $edit);
-      variable_set('instagram_block_tag_block_settings', $save_values);
+      config_set('instagram_block.settings', 'instagram_block_tag_block_settings', $save_values);
       break;
   }
 }
@@ -143,14 +154,14 @@ function instagram_block_block_save($delta = '', $edit = array()) {
  * Fetches the instagram photos and creates a render array.
  */
 function instagram_block_block_view($delta = '') {
+require_once('instagram_block.lib.php');
   $block = array();
-
   // Add instagram_block specific styles.
-  drupal_add_css(drupal_get_path('module', 'instagram_block') . '/css/instagram-block.css');
+  backdrop_add_css(backdrop_get_path('module', 'instagram_block') . '/css/instagram-block.css');
 
   // Get configuration values.
-  $config = variable_get('instagram_block_admin_settings', array());
-  //$values = variable_get('instagram_block_data', array());
+  $config = config_get('instagram_block.settings', 'instagram_block_admin_settings');
+  $values = config_get('instagram_block.settings', 'instagram_block_data');
   $img_resolution = isset($values['img_resolution']) ? $values['img_resolution'] : 'thumbnail';
   $content = array();
   $block = array(
@@ -167,13 +178,13 @@ function instagram_block_block_view($delta = '') {
     try {
       switch ($delta) {
         case 'instagram_block':
-          $values = variable_get('instagram_block_user_block_settings', array());
+          $values = config_get('instagram_block.settings', 'instagram_block_user_block_settings');
           $request = new InstagramRequest($config, $values);
           $request->requestUserMedia();
           $block['subject'] = t('Instagram Block - User Block');
           break;
         case 'instagram_block_tag':
-          $values = variable_get('instagram_block_tag_block_settings', array());
+          $values = config_get('instagram_block.settings', 'instagram_block_tag_block_settings');
           $request = new InstagramRequest($config, $values);
           $request->requestTagMedia();
           $block['subject'] = t('Instagram Block - Tag Block');
@@ -211,7 +222,7 @@ function instagram_block_menu() {
   $items['admin/config/services/instagram_block'] = array(
     'title' => 'Instagram Block',
     'description' => 'Configuration page for Instagram Block.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('instagram_block_admin_settings'),
     'access arguments' => array('administer site configuration'),
     'file' => 'instagram_block.admin.inc',

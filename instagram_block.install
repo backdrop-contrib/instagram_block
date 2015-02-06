@@ -19,15 +19,19 @@ function instagram_block_install() {
   );
 
   $tag_block = array(
-    'tag' => 'drupal',
+    'tag' => 'backdrop',
     'count' => '4',
     'width' => '100',
     'height' => '100',
     'img_resolution' => 'thumbnail',
   );
 
-  variable_set('instagram_block_user_block_settings', $user_block);
-  variable_set('instagram_block_tag_block_settings', $tag_block);
+$config = config('instagram_block.settings');
+$config->set('instagram_block_admin_settings', '');
+$config->set('instagram_block_user_block_settings', $user_block);
+$config->set('instagram_block_tag_block_settings', $tag_block);
+$config->set('instagram_block_data', '');
+$config->save();
 }
 
 /*
@@ -36,9 +40,9 @@ function instagram_block_install() {
  * Deletes variables.
  */
 function instagram_block_uninstall() {
-  variable_del('instagram_block_admin_settings');
-  variable_del('instagram_block_user_block_settings');
-  variable_del('instagram_block_tag_block_settings');
+//  variable_del('instagram_block_admin_settings');
+//  variable_del('instagram_block_user_block_settings');
+//  variable_del('instagram_block_tag_block_settings');
 }
 
 /**
@@ -66,7 +70,7 @@ function instagram_block_update_7100() {
     'img_resolution' => '',
   );
 
-  $old = variable_get('instagram_block_data', $empty);
+$old = config_get('instagram_block.settings', 'instagram_block_data');
 
   // Move config from old to new variables.
   foreach (array_keys($empty) as $key) {
@@ -79,9 +83,25 @@ function instagram_block_update_7100() {
   }
 
   // Save new variables.
-  variable_set('instagram_block_admin_settings', $admin);
-  variable_set('instagram_block_user_block_settings', $block);
+  config_set('instagram_block.settings', 'instagram_block_admin_settings', $admin);
+  config_set('instagram_block.settings', 'instagram_block_user_block_settings', $block);
 
   // Delete old variable.
-  variable_del('instagram_block_data');
+  // variable_del('instagram_block_data');
+}
+
+
+function instagram_block_update_1000() {
+  $config = config('instagram_block.settings');
+  $config->set('instagram_block_admin_settings', update_variable_get('instagram_block_admin_settings'));
+  $config->set('instagram_block_user_block_settings', update_variable_get('instagram_block_user_block_settings'));
+  $config->set('instagram_block_tag_block_settings', update_variable_get('instagram_block_tag_block_settings'));
+  $config->set('instagram_block_data', update_variable_get('instagram_block_data'));
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('instagram_block_admin_settings');
+  update_variable_del('instagram_block_user_block_settings');
+  update_variable_del('instagram_block_tag_block_settings');
+  update_variable_del('instagram_block_data');
 }

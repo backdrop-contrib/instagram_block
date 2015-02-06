@@ -95,11 +95,8 @@ class InstagramRequest {
         if (isset($data->error)) {
           $error = $data->error;
         }
-        elseif (isset($data->meta)) {
-          $error = new Exception($data->meta->error_type . ': ' . $data->meta->error_message, $data->meta->code);
-        }
       }
-      watchdog_exception('instagram_block', $error);
+      throw new Exception($error);
     }
   }
 
@@ -121,7 +118,7 @@ class InstagramRequest {
    *   stdClass response object.
    */
   protected function doRequest($url, $headers, $method, $data) {
-    return drupal_http_request($url, array('headers' => $headers, 'method' => $method, 'data' => $data));
+    return backdrop_http_request($url, array('headers' => $headers, 'method' => $method, 'data' => $data));
   }
 
   /**

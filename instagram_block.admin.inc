@@ -38,7 +38,7 @@ function instagram_block_admin_settings($form, &$form_state) {
   );
 
   // Store data from variable in $form for now.
-  $form['#data'] = variable_get('instagram_block_admin_settings', $empty);
+  $form['#data'] = config_get('instagram_block.settings', 'instagram_block_admin_settings');
 
   $form['user_id'] = array(
     '#type' => 'textfield',
@@ -81,8 +81,7 @@ function instagram_block_admin_settings_submit(&$form, &$form_state) {
     // Strip any spaces that may have resulted from a copy/paste of tokens
     $form_state['values']['access_token'] = trim($form_state['values']['access_token']);
     $form_state['values']['user_id'] = trim($form_state['values']['user_id']);
-
-    variable_set('instagram_block_admin_settings', $form_state['values']);
-    drupal_set_message(t('Instagram block admin configuration has been saved.'), 'status');
+    config_set('instagram_block.settings', 'instagram_block_admin_settings', $form_state['values']);
+    backdrop_set_message(t('Instagram block admin configuration has been saved.'), 'status');
   }
 }

@@ -1,6 +1,7 @@
 name = Instagram Block
 description = Creates a block that displays images from instagram.
-core = 7.x
+version = BACKDROP_VERSION
+backdrop = 1.x
 
 files[] = instagram_block.lib.php
 
