@@ -2,5 +2,6 @@ name = Instagram Block
 description = Creates a block that displays images from instagram.
 version = 1.x-1.1
 backdrop = 1.x
+type = module
 files[] = instagram_block.lib.php
 configure = admin/config/services/instagram_block
