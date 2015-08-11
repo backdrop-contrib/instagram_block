@@ -16,7 +16,7 @@ INTRODUCTION
 
 This is a very simple module that integrates with Instagram and creates a block containing your most recent instagram posts.
 
-The block's configuration page lets you choose how many posts and what size they should appear in the block. The images are individually exposed to the drupal theme layer, so developers have access to an all of the variables provided by the instagram api should they choose to extent the block. For more informations see the instagram developer pages: http://instagram.com/developer/endpoints/users/#get_users_media_recent
+Each block's configuration page lets you choose how many posts and what size they should appear in the block. The images are individually exposed to the drupal theme layer, so developers have access to an all of the variables provided by the instagram api should they choose to extent the block. For more informations see the instagram developer pages: http://instagram.com/developer/endpoints/users/#get_users_media_recent
 
 This module depends on php curl commands to parse the information from instagram and thus has a dependency on php5-curl.
 
@@ -27,7 +27,7 @@ The heavy lifting for this module was done by Nick from Blueprint Interactive, s
 TESTED
 -----
 
-Created an Instagram account block in Backdrop 1.0
+Created an Instagram user accout block and a hashtag block in Backdrop 1.1
 
 
 KNOWN ISSUES
@@ -38,10 +38,6 @@ KNOWN ISSUES
 REQUIREMENTS
 ------------
 
-Instagram Block has one dependency.
-
-Backdrop core modules
- * Block
 
 INSTALLATION
 ------------
@@ -58,13 +54,16 @@ PERMISSIONS
 USAGE
 -----
 
-@todo
+You will need to be logged in to the Instagram account you wish to show if you are setting up the user block.
+
+This module installs two blocks for you to use (as sidebars, etc...)
+
+The config page contains basic authentication config while the blocks on the Layout page contain most of the settings.
 
 License
 -------
 
-This project is GPL v2 software. See the LICENSE.txt file in this directory for
-complete text.
+This project is GPL v2 software. See the LICENSE.txt file in this directory for complete text.
 
 Maintainers
 -----------
