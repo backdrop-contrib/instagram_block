@@ -1,19 +1,6 @@
 INSTAGRAM BLOCK
 ===========
 
-CONTENTS OF THIS FILE
----------------------
-
- - Introduction
- - Requirements
- - Installation
- - Permissions
- - Usage
- - Sponsors
-
-INTRODUCTION
-------------
-
 This is a very simple module that integrates with Instagram and creates a block containing your most recent instagram posts.
 
 Each block's configuration page lets you choose how many posts and what size they should appear in the block. The images are individually exposed to the drupal theme layer, so developers have access to an all of the variables provided by the instagram api should they choose to extent the block. For more informations see the instagram developer pages: http://instagram.com/developer/endpoints/users/#get_users_media_recent
@@ -24,6 +11,18 @@ I also provide an authorisation callback to get the users instagram details thro
 
 The heavy lifting for this module was done by Nick from Blueprint Interactive, so kudos to him.
 
+CONTENTS OF THIS FILE
+---------------------
+
+ - Introduction
+ - Tested
+ - Known Issues
+ - Requirements
+ - Installation
+ - Permissions
+ - Usage
+ - Sponsors
+
 TESTED
 -----
 
@@ -33,11 +32,12 @@ Created an Instagram user accout block and a hashtag block in Backdrop 1.1
 KNOWN ISSUES
 ---------------------
 
-
+@todo
 
 REQUIREMENTS
 ------------
 
+Direct access to the Instagram account you will be using
 
 INSTALLATION
 ------------
