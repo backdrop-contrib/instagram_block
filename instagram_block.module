@@ -27,11 +27,6 @@ function instagram_block_block_info() {
     'cache' => BACKDROP_CACHE_GLOBAL,
   );
 
-  $blocks['instagram_block_tag'] = array(
-    'info' => t('Instagram Block - Tag Block'),
-    'cache' => BACKDROP_CACHE_GLOBAL,
-  );
-
   return $blocks;
 }
 
@@ -102,25 +97,6 @@ function instagram_block_block_configure($delta = '') {
       $form['img_resolution']['#default_value'] = isset($form['#block_data']['img_resolution']) ? $form['#block_data']['img_resolution'] : '';
 
       break;
-    case 'instagram_block_tag':
-      $form['#block_data'] = config_get('instagram_block.settings', 'instagram_block_tag_block_settings');
-      $description = t('This block won\'t fetch media from your personal instagram account. Configurations in this block utilise the !globalconfig.', array(
-        '!globalconfig' => l('global configuration', 'admin/config/services/instagram_block'),
-      ));
-
-      $form['count']['#default_value'] = isset($form['#block_data']['count']) ? $form['#block_data']['count'] : '';
-      $form['width']['#default_value'] = isset($form['#block_data']['width']) ? $form['#block_data']['width'] : '';
-      $form['height']['#default_value'] = isset($form['#block_data']['height']) ? $form['#block_data']['height'] : '';
-      $form['img_resolution']['#default_value'] = isset($form['#block_data']['img_resolution']) ? $form['#block_data']['img_resolution'] : '';
-
-      $form['tag'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Tag'),
-        '#description' => t('Fetch media with this tag'),
-        '#default_value' => isset($form['#block_data']['tag']) ? $form['#block_data']['tag'] : '',
-        '#weight' => -49,
-      );
-      break;
   }
 
   $form['description']['#markup'] = $description;
@@ -139,11 +115,6 @@ function instagram_block_block_save($delta = '', $edit = array()) {
       $variables = config_get('instagram_block.settings', 'instagram_block_user_block_settings');
       $save_values = array_merge($variables, $edit);
       config_set('instagram_block.settings', 'instagram_block_user_block_settings', $save_values);
-      break;
-    case 'instagram_block_tag':
-      $variables = config_get('instagram_block.settings', 'instagram_block_tag_block_settings');
-      $save_values = array_merge($variables, $edit);
-      config_set('instagram_block.settings', 'instagram_block_tag_block_settings', $save_values);
       break;
   }
 }
@@ -182,12 +153,6 @@ require_once('instagram_block.lib.php');
           $request = new InstagramRequest($config, $values);
           $request->requestUserMedia();
           $block['subject'] = t('Instagram Block - User Block');
-          break;
-        case 'instagram_block_tag':
-          $values = config_get('instagram_block.settings', 'instagram_block_tag_block_settings');
-          $request = new InstagramRequest($config, $values);
-          $request->requestTagMedia();
-          $block['subject'] = t('Instagram Block - Tag Block');
           break;
       }
     }
